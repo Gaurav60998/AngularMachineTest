@@ -19,8 +19,9 @@ export class UserProfileComponent  {
     this.loaduser();
   }
    loaduser(){
-    this.http.get("assets/user.json").subscribe((res:any)=>{
-     this.userdata=res.data;
-    })
+    this.http.get("http://localhost:3000/signup").subscribe((res: any) => {
+      // Access the second object in the 'signup' array
+      this.userdata = res;
+    });
    }
 }
