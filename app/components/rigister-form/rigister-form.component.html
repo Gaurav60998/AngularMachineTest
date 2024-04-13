@@ -1,5 +1,5 @@
 <div class="registration-form">
-    <button (click)="toggleForm()" class="rigister">Register</button>
+    <button (click)="toggleForm()" class="rigister text-center">Register</button>
   
       <form>
         <div *ngIf="showForm" class="form-popup show">
@@ -35,7 +35,7 @@
                 <div class="input-row">
                     <input type="tel" placeholder="Phone Number" [(ngModel)]="phoneNumber" name="phoneNumber">
                 </div>
-                <div class="input-row">
+                <div class="input-row" style="text-align: left;">
                     <label for="ageSlider">Age:</label>
                     <mat-slider min="20" step="10" max="100"  discrete="true" showTickMarks="true" style="width: 280px;">
                       <input matSliderThumb [(ngModel)]="selectedvalue">
