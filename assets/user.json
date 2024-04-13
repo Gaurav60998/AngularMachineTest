@@ -1,0 +1,13 @@
+{
+  "data":  [
+             {
+                "fristname":"gaurav",
+                "lastname":"dakare",
+                "age":20,
+                "gmail":"gauravdakare@gmail.com",
+                "state":"maharstra",
+                "hobby":"hocky ,footboll,bookes",
+                "phone":9665755122
+             }    
+    ]
+}
