@@ -1,0 +1,91 @@
+app-navbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1; /* Ensure the navbar stays above the hero image */
+    background-color: rgb(0, 8, 255);
+  }
+  ::ng-deep app-navbar .logo {
+    /* Override styles for the logo */
+    background-color: rgb(172, 29, 29); /* Change to the desired background color */
+  }
+  .my-form {
+    position: relative;
+    margin-top: 50px; /* Adjust this to create space between navbar and form */
+    width: 80%;
+    max-width: 400px; /* Adjust maximum width as needed */
+    margin: 0 auto; /* Center the form horizontally */
+    padding: 20px;
+    background-color: #f2f2f2;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    margin-top: 220px;
+}
+
+.profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+.profile-photo {
+    flex: 0 0 200px; /* Fixed width for photo */
+    margin-left: 50px;
+}
+
+.profile-photo img {
+    width: 100%;
+    height: 200px;
+    border-radius: 0;
+}
+
+.photo-buttons {
+    margin-top: 10px;
+}
+
+.photo-buttons button {
+    margin-right: 2px;
+    padding: 5px 10px;
+    background-color: rgb(218, 218, 45);
+    color:black;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+}
+
+.user-info {
+    flex: 1; /* Fill remaining space */
+    padding-left: 200px;
+}
+
+.user-info h1 {
+    margin-top: 0;
+    font-size: 24px;
+    color: #333;
+}
+
+.user-info p {
+    margin-top: 5px;
+    color: #666;
+    padding: 0;
+    margin: 0;
+    font-weight: 500;
+    font-size: 24px;
+}
+.footer {
+    margin-top: 70px; /* Add margin to separate from container */
+    padding-bottom: 0;
+    background-color: #f2f2f2; /* Light gray background */
+    padding: 20px;
+    text-align: center;
+    justify-items: center;
+    align-items: center;
+  }

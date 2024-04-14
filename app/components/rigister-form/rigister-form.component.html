@@ -1,0 +1,90 @@
+<div class="registration-form">
+    <button (click)="toggleForm()" class="rigister text-center">Register</button>
+  
+      <form>
+        <div *ngIf="showForm" class="form-popup show">
+          <span class="close" (click)="toggleForm()">&times;</span>
+           <header style="background-color: blue" >
+            <h5 class="text-start" style="color: white;">Register</h5>
+          </header>
+        <div class="row">
+            <div class="col-4">
+            <div class="photo-upload">
+                <img
+                    src="https://tse4.mm.bing.net/th?id=OIP.WpnGIPj1DKAGo-CP64znTwHaHa&pid=Api&P=0&h=220"
+                    class="img-fluid rounded-top"
+                    alt=""
+                />
+                <div class="input-row">
+                    <label for="photoInput">Upload your photo</label>
+                    <input type="file" id="photoInput" (change)="onFileSelected($event)">
+                  </div>
+            </div>
+            </div>
+            <div class="col-8 mt-3">
+            <div class="form-fields">
+                    <div class="row">
+                    <div class="col-6">
+                    <input type="text" class="col-6 col-sm-3" placeholder="First Name" [(ngModel)]="firstName" name="firstName"></div>
+                    <div class="col-6">
+                    <input type="text" class="col-6 col-sm-3" placeholder="Last Name" [(ngModel)]="lastName" name="lastName"></div>
+                </div>
+                <div class="input-row">
+                    <input type="email" placeholder="Email" [(ngModel)]="email" name="email">
+                </div>
+                <div class="input-row">
+                    <input type="tel" placeholder="Phone Number" [(ngModel)]="phoneNumber" name="phoneNumber">
+                </div>
+                <div class="input-row" style="text-align: left;">
+                    <label for="ageSlider">Age:</label>
+                    <mat-slider [(ngModel)]="selectedvalue" min="20" step="10" max="100" discrete="true" showTickMarks="true" style="width: 280px;">
+                      <input matSliderThumb [(ngModel)]="selectedvalue">
+                  </mat-slider>
+                  </div>
+                <div class="input-row">
+                    <select [(ngModel)]="state" name="state">
+                        <option value="" disabled selected hidden>Select your location</option>
+                        <option value="New York">New York</option>
+                        <option value="Los Angeles">Los Angeles</option>
+                        <option value="Chicago">Chicago</option>
+                        <option value="Houston">Houston</option>
+                        <option value="Miami">Miami</option>
+                      </select>
+                </div>
+                <div class="input-row">
+                <select [(ngModel)]="country" name="country">
+                <option value="" disabled selected hidden>Select your country</option>
+                <option value="New York">New York</option>
+                <option value="Los Angeles">Los Angeles</option>
+                <option value="Chicago">Chicago</option>
+                <option value="Houston">Houston</option>
+                <option value="Miami">Miami</option>
+                    </select>
+                </div>
+                <div class="input-row">
+                    <textarea placeholder="Address" [(ngModel)]="address" name="address"></textarea>
+                </div>
+                <div class="input-row">
+                  <input type="text" placeholder="Tags"  [(ngModel)]="tag" name="tag">
+                  </div>
+                  <div id="sampleTagsContainer"> 
+                    <span class="badge badge-primary bg-primary square-badge">apple <span class="tag-remove">&times;</span></span>
+                    <span class="badge badge-primary bg-primary square-badge">banana <span class="tag-remove">&times;</span></span>
+                    <span class="badge badge-primary bg-primary square-badge">orange <span class="tag-remove">&times;</span></span>
+                  </div>
+                <div class="input-row">
+                    <input type="checkbox" id="subscribe" [(ngModel)]="subscribeToNews" name="subscribeToNews">
+                    <label for="subscribe">Subscribe to News:</label>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button type="button" (click)="cancelForm()" class="c">Cancel</button>
+                <button type="submit" (click)="submitForm()" class="b">Submit</button>
+            </div>
+        </div>
+        </div>
+      </div>
+      </form>
+  </div>
+
