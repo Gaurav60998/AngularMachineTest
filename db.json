@@ -1,0 +1,17 @@
+{
+  "signup": [
+    {
+      "id": "1",
+      "profileImage": "https://up.yimg.com/ib/th?id=OIP.eeZ3jfS4et6eKUi1je3mxwHaHa&%3Bpid=Api&rs=1&c=1&qlt=95&w=124&h=124",
+      "fristname": "Gaurav",
+      "lastname": "Dakare",
+      "gmail": "gaurav@gmail.com",
+      "phone": 9665755122,
+      "age": 30,
+      "address": "home",
+      "country": "india",
+      "state": "maharashtra",
+      "tag": "hocky ,footboll,bookes"
+    }
+  ]
+}

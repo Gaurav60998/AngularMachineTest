@@ -1,0 +1,84 @@
+<app-navbar></app-navbar>
+<body>
+  <div class="profile-container">
+    <div *ngFor="let user of userdata" class="profile-photo">
+      <h5 style="color: blue;">Profile</h5>
+      <img [src]="user.profileImage" alt="Profile Photo">
+      <div class="photo-buttons">
+        <button>Edit Photo</button>
+        <button (click)="editProfile(user)">Edit Profile</button>
+        </div>
+      </div>
+        <div *ngFor="let user of userdata" class="user-info">
+          <ng-container *ngIf="!isEditing; else editFormSection">
+            <p>I'm {{user.firstName}} {{user.lastName}} and I'm {{user.age}} years old.</p>
+            <p>You can send your email to {{user.email}}. I live in the state of {{user.state}}.</p>
+            <p>I like to play {{user.tag}}, and reading books. Please send me newsletters.</p>
+            <p>Please reach out to me on my phone number: {{user.phoneNumber}}</p>
+            <button style="background-color: rgb(36, 123, 36); color: white; border: none;">I Agree</button>
+          </ng-container>
+    </div>
+    <div class="box">
+        <div class="box-sm red"></div>
+        <div class="box-sm orange"></div>
+        <div class="box-sm yellow"></div>
+        <div class="box-sm green"></div>
+        <div class="box-sm blue"></div>
+        <div class="box-sm purple"></div>
+        <div class="box-sm red"></div>
+        <div class="box-sm orange"></div>
+        <div class="box-sm yellow"></div>
+        <div class="box-sm green"></div>
+        <div class="box-sm blue"></div>
+        <div class="box-sm purple"></div>
+      </div>
+      <ng-template #editFormSection>
+        <!-- Show edit form when editing -->
+        <form [formGroup]="editForm" (ngSubmit)="submitForm()" class="row g-3">
+          <div class="col-md-6">
+            <label for="firstName" class="form-label">First Name:</label>
+            <input type="text" id="firstName" formControlName="firstName" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label for="lastName" class="form-label">Last Name:</label>
+            <input type="text" id="lastName" formControlName="lastName" class="form-control">
+          </div>
+          <div class="col-12">
+            <label for="email" class="form-label">Email:</label>
+            <input type="email" id="email" formControlName="email" class="form-control">
+          </div>
+          <div class="col-12">
+            <label for="phoneNumber" class="form-label">Phone Number:</label>
+            <input type="text" id="phoneNumber" formControlName="phoneNumber" class="form-control">
+          </div>
+          <div class="col-12 d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid">Save Changes</button>
+            <button type="button" class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
+          </div>
+        </form>
+      </ng-template>
+       
+  </div>
+  <footer class="footer" style="margin-top: 0; padding: 0;">
+    <div style="background-color: rgb(14, 14, 44); color: white; height: 100px;">
+    <div style="color: beige; padding-top: 30px;" class="input-with-logo">
+      <span class="gmail-logo"></span>
+      <input type="text" placeholder="Enter your Gmail" style="width: 300px;  border: 3px solid aqua;  border-radius: 5px; padding-right: 10px; background-color:transparent ; color: white;">
+    </div>
+</div>
+  </footer>
+  <div class="box">
+    <div class="box-sm red"></div>
+    <div class="box-sm orange"></div>
+    <div class="box-sm yellow"></div>
+    <div class="box-sm green"></div>
+    <div class="box-sm blue"></div>
+    <div class="box-sm purple"></div>
+    <div class="box-sm red"></div>
+    <div class="box-sm orange"></div>
+    <div class="box-sm yellow"></div>
+    <div class="box-sm green"></div>
+    <div class="box-sm blue"></div>
+    <div class="box-sm purple"></div>
+  </div>
+</body>
