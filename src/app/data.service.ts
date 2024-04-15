@@ -8,7 +8,6 @@ export class DataService {
   registrationForm: any;
   constructor(private fb: FormBuilder) {
     this.registrationForm = this.fb.group({
-      profileImage: [''],
       firstname: [
         '',
         [
@@ -20,11 +19,14 @@ export class DataService {
       lastname: [],
       email: ['', Validators.required],
       phoneNo: [''],
-      age: [''],
-      address: ['', Validators.required],
+      addressType: ['home'], // default value
+      address1: [''],
+      address2: [''],
+      companyAddress1: [''],
+      companyAddress2: [''],
       country: ['', Validators.required],
       state: ['', Validators.required],
-      tags: [[], [], [], []],
+      tags: [''],
     });
   }
 }

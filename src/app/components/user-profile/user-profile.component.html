@@ -11,10 +11,10 @@
       </div>
         <div *ngFor="let user of userdata" class="user-info">
           <ng-container *ngIf="!isEditing; else editFormSection">
-            <p>I'm {{user.firstName}} {{user.lastName}} and I'm {{user.age}} years old.</p>
+            <p>I'm {{user.firstname}} {{user.lastname}} and I'm {{user.age}} years old.</p>
             <p>You can send your email to {{user.email}}. I live in the state of {{user.state}}.</p>
-            <p>I like to play {{user.tag}}, and reading books. Please send me newsletters.</p>
-            <p>Please reach out to me on my phone number: {{user.phoneNumber}}</p>
+            <p>I like to play {{user.tags}}, and reading books. Please send me newsletters.</p>
+            <p>Please reach out to me on my phone number: {{user.phoneNo}}</p>
             <button style="background-color: rgb(36, 123, 36); color: white; border: none;">I Agree</button>
           </ng-container>
     </div>

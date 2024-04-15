@@ -1,0 +1,110 @@
+<div class="container">
+<div class="register-container">
+    <button (click)="toggleForm()" class="register text-center" style="background-color: aqua;  width: 150px; border: none;">Register</button>
+  </div>
+<div *ngIf="showForm" class="form-popup show">
+  <span class="close" (click)="toggleForm()">&times;</span>
+  <p mat-dialog-title class="title m-2 ml-4" style="background-color: blue; ">Register</p>
+  <mat-dialog-content class="mat-typography">
+    <!-- Registration Form -->
+    <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+      <!-- Profile Image -->
+      <input type="file" formControlName="profileImage" accept="image/*" (change)="onFileChange($event)" />
+      <div style="color: red" *ngIf="registrationForm.get('profileImage')?.errors?.['invalidImageSize']">
+        <div class="imagePreview" *ngIf="imageURL && imageURL !== 'https://www.w3schools.com/howto/img_avatar.png'">
+          <img [src]="imageURL" [alt]="registrationForm.get('profileImage')?.value" />
+        </div>
+      </div>
+      <!-- Firstname and Lastname -->
+      <label>
+        <span>Firstname</span>
+        <input type="text" class="input" formControlName="firstname" maxlength="20" />
+        <small *ngIf="registrationForm.get('firstname')?.invalid && (registrationForm.get('firstname')?.dirty || registrationForm.get('firstname')?.touched)" class="block p-error">
+          <div *ngIf="registrationForm.get('firstname')?.errors?.['required']"  class="error-message">Name is required.</div>
+          <div *ngIf="registrationForm.get('firstname')?.errors?.['pattern']"  class="error-message">Enter a valid Name</div>
+          <div *ngIf="registrationForm.get('firstname')?.errors?.['maxlength']"  class="error-message">Characters should be less than 20</div>
+        </small>
+      </label>
+      <label>
+        <span>Lastname</span>
+        <input type="text" class="input" formControlName="lastname" />
+      </label>
+      <!-- Email -->
+      <label>
+        <span>Email</span>
+        <input type="email" class="input" formControlName="email" />
+        <small *ngIf="registrationForm.get('email')?.invalid && (registrationForm.get('email')?.dirty || registrationForm.get('email')?.touched)" class="block p-error">
+          <div *ngIf="registrationForm.get('email')?.errors?.['required']"  class="error-message">Email is required.</div>
+          <div *ngIf="registrationForm.get('email')?.errors?.['email']"  class="error-message">Enter a valid email address.</div>
+        </small>
+      </label>
+      <!-- Phone Number -->
+      <label>
+        <span>phoneNumber</span>
+        <input type="tel" class="input" formControlName="phoneNo"  placeholder="9021545454"/>
+      </label>
+      <!-- Country and State -->
+      <select formControlName="country">
+        <option value="" disabled selected>Select Country</option>
+        <option value="india">India</option>
+        <option value="london">London</option>
+        <option value="uk">UK</option>
+        <option value="america">America</option>
+      </select>
+      
+      <select formControlName="state">
+        <option value="" disabled selected>Select State</option>
+        <option value="maharashtra">Maharashtra</option>
+        <option value="delhi">Delhi</option>
+        <option value="rajasthan">Rajasthan</option>
+        <option value="gujarat">Gujarat</option>
+      </select>
+      <!-- Age slider -->
+      <label class="ageLabel">Age</label>
+      <mat-slider showTickMarks min="0" max="100" step="1" discrete [displayWith]="formatLabel">
+        <input matSliderThumb formControlName="age" />
+      </mat-slider>
+      <br>
+      <!-- Address Type -->
+      <label for="addressType">Address Type:</label>
+      <select formControlName="addressType">
+        <option value="home">Home</option>
+        <option value="company">Company</option>
+      </select>
+      <br>
+      <!-- Address Fields (conditional) -->
+      <div *ngIf="registrationForm.get('addressType')?.value === 'home'">
+        <label for="address1">Home Address 1:</label>
+        <input type="text" formControlName="address1" /><br>
+        <label for="address2">Home Address 2:</label>
+        <input type="text" formControlName="address2" />
+      </div>
+      <div *ngIf="registrationForm.get('addressType')?.value === 'company'">
+        <label for="companyAddress1">Company Address 1:</label>
+        <input type="text" formControlName="companyAddress1" />
+        <label for="companyAddress2">Company Address 2:</label>
+        <input type="text" formControlName="companyAddress2" />
+      </div>
+      <!-- Tags -->
+      <br>
+      <mat-chip-grid #chipGrid aria-label="Enter fruits">
+        <span>Tags</span><br>
+        <input class="matInput" formControlName="tags" placeholder="New Hobby..." [matChipInputFor]="chipGrid"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="add($event)" />
+      </mat-chip-grid>
+      <!-- Subscribe to Newsletter -->
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" formControlName="subscribeToNewsletter" />
+        <label class="form-check-label" for="inlineCheckbox1">Subscribe to newsletter</label>
+      </div>
+      <br>
+      <br>
+      <!-- Form Buttons -->
+      <mat-dialog-actions align="end">
+        <button class="submit cancel-button" (click)="onCancel()" mat-dialog-close>Cancel</button>
+        <button class="submit submit-button mr-5 pl-5 pr-5" type="submit">Submit</button>
+      </mat-dialog-actions>
+    </form>
+  </mat-dialog-content>
+</div>
+</div>
