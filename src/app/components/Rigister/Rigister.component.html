@@ -9,12 +9,12 @@
     <!-- Registration Form -->
     <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
       <!-- Profile Image -->
-      <input type="file" formControlName="profileImage" accept="image/*" (change)="onFileChange($event)" />
-      <div style="color: red" *ngIf="registrationForm.get('profileImage')?.errors?.['invalidImageSize']">
-        <div class="imagePreview" *ngIf="imageURL && imageURL !== 'https://www.w3schools.com/howto/img_avatar.png'">
-          <img [src]="imageURL" [alt]="registrationForm.get('profileImage')?.value" />
-        </div>
-      </div>
+      <label for="profileImage">Profile Image:</label>
+  <input type="file" id="profileImage" formControlName="profileImage" (change)="onFileChange($event)" accept="image/*">
+  <div *ngIf="registrationForm.get('profileImage')?.invalid && (registrationForm.get('profileImage')?.dirty || registrationForm.get('profileImage')?.touched)">
+    <div *ngIf="registrationForm.get('profileImage')?.errors?.['required']" class="error-message">Profile image is required.</div>
+    <div *ngIf="registrationForm.get('profileImage')?.errors?.['invalidImageSize']" class="error-message" class="error-message">Profile image size should be less than {{ maxImageSize / 1024 }} KB.</div>
+  </div>
       <!-- Firstname and Lastname -->
       <label>
         <span>Firstname</span>
@@ -27,7 +27,12 @@
       </label>
       <label>
         <span>Lastname</span>
-        <input type="text" class="input" formControlName="lastname" />
+        <input type="text" class="input" formControlName="lastname"  maxlength="20" />
+        <small *ngIf="registrationForm.get('lastname')?.invalid && (registrationForm.get('lastname')?.dirty || registrationForm.get('lastname')?.touched)" class="block p-error">
+          <div *ngIf="registrationForm.get('lastname')?.errors?.['required']"  class="error-message">Name is required.</div>
+          <div *ngIf="registrationForm.get('lastname')?.errors?.['pattern']"  class="error-message">Enter a valid Name</div>
+          <div *ngIf="registrationForm.get('lastname')?.errors?.['maxlength']"  class="error-message">Characters should be less than 20</div>
+        </small>
       </label>
       <!-- Email -->
       <label>
@@ -41,23 +46,41 @@
       <!-- Phone Number -->
       <label>
         <span>phoneNumber</span>
-        <input type="tel" class="input" formControlName="phoneNo"  placeholder="9021545454"/>
+        <input type="tel" class="input" formControlName="phoneNo" maxlength="10" placeholder="9021545454"/> 
       </label>
+      <div
+      *ngIf="
+        registrationForm.get('phoneNo')?.invalid &&
+        (registrationForm.get('phoneNo')?.dirty ||
+          registrationForm.get('phoneNo')?.touched)
+      "
+    >
+      <div
+        *ngIf="registrationForm.get('phoneNo')?.errors?.['required']"
+        class="error-message"
+      >
+        phoneNo is required.
+      </div>
+      <div
+        *ngIf="registrationForm.get('phoneNo')?.errors?.['pattern']"
+        class="error-message"
+      >
+        Invalid Entry
+      </div>
+    </div>
       <!-- Country and State -->
-      <select formControlName="country">
+      <select formControlName="country" (change)="onCountryChange()">
         <option value="" disabled selected>Select Country</option>
-        <option value="india">India</option>
-        <option value="london">London</option>
-        <option value="uk">UK</option>
-        <option value="america">America</option>
+        <option *ngFor="let country of countries" [value]="country">
+          {{ country }}
+        </option>
       </select>
       
       <select formControlName="state">
         <option value="" disabled selected>Select State</option>
-        <option value="maharashtra">Maharashtra</option>
-        <option value="delhi">Delhi</option>
-        <option value="rajasthan">Rajasthan</option>
-        <option value="gujarat">Gujarat</option>
+        <option *ngFor="let state of states[country?.value]" [value]="state">
+          {{ state }}
+        </option>
       </select>
       <!-- Age slider -->
       <label class="ageLabel">Age</label>

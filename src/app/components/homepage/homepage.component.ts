@@ -3,7 +3,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { NavbarComponent } from '../navbar/navbar.component';
-import { AboutComponent } from '../Rigister/about.component';
+import { AboutComponent } from '../Rigister/Rigister.component';
 
 @Component({
   selector: 'app-homepage',

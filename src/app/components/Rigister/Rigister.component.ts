@@ -1,32 +1,32 @@
+
 import { Component, OnInit } from '@angular/core';
-import { NavbarComponent } from '../navbar/navbar.component';
-import { HttpClient, HttpClientModule } from "@angular/common/http";
-import { NgModule } from "@angular/core";
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { CommonService } from '../../common.service';
-import { AboutComponent } from '../Rigister/Rigister.component';
-import { MatDialog } from '@angular/material/dialog';
-import { User } from '../../user.interface';
-import { MatSliderModule } from '@angular/material/slider';
 import { MatDialogModule } from '@angular/material/dialog';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatSliderModule } from '@angular/material/slider';
+import { MatChipsModule } from '@angular/material/chips';
+import { CommonService } from '../../common.service';
+import { Router } from '@angular/router';
+import { NgxImageCompressService } from 'ngx-image-compress';
+
 
 @Component({
-  selector: 'app-user-profile',
+  selector: 'app-about',
   standalone: true,
-  imports: [NavbarComponent,HttpClientModule,CommonModule,FormsModule,ReactiveFormsModule,MatSliderModule,AboutComponent,MatDialogModule],
-  templateUrl: './user-profile.component.html',
-  styleUrl: './user-profile.component.css'
+  imports: [CommonModule,MatDialogModule,ReactiveFormsModule,MatSliderModule,MatChipsModule],
+  templateUrl: './Rigister.component.html',
+  styleUrl: './Rigister.component.css'
 })
-export class UserProfileComponent implements OnInit {
-  user:User | undefined; 
+export class AboutComponent implements OnInit {
+  registrationForm!: FormGroup;
+  separatorKeysCodes: number[] = [13, 188];
+  addOnBlur = true;
   imageURL: string | ArrayBuffer | null = '';
+  showForm: boolean = false;
   maxImageSize: number = 100 * 1024;
-  editForm!: FormGroup;
-  isEditing: boolean = false;
-  userId: any;
-  countries = [
+   userData: any = {};
+   countries = [
     'India',
     'United States of America',
     'France',
@@ -244,62 +244,34 @@ export class UserProfileComponent implements OnInit {
     ],
   };
 
+  constructor(private fb: FormBuilder, private commonService: CommonService, private router: Router, private imageCompress: NgxImageCompressService) { }
 
-  constructor(private commonService: CommonService, private fb: FormBuilder, public dialog: MatDialog) { }
   get country() {
-    return this.editForm.get('country');
+    return this.registrationForm.get('country');
   }
 
   get state() {
-    return this.editForm.get('state');
+    return this.registrationForm.get('state');
   }
   onCountryChange() {
     // Reset state value when country changes
     this.state?.setValue('');
   }
- 
   ngOnInit(): void {
-    this.createEditForm();
-    this.loadLatestUser();
-    this.commonService.getLatestUser().subscribe(user => {
-      this.user = user;
-    });
-  }
-
-  loadLatestUser() {
-    this.commonService.getLatestUser().subscribe(user => {
-      this.user = user;
-      this.userId = user.id; // Assuming user object has an 'id' property
-      this.populateEditForm();
-    });
-  }
-  populateEditForm() {
-    if (this.user) {
-      this.editForm.patchValue({
-        profileImage: this.user.profileImage,
-        firstname: this.user.firstname,
-        lastname: this.user.lastname,
-        email: this.user.email,
-        phoneNo: this.user.phoneNo,
-        country: this.user.country,
-        state: this.user.state,
-        age: this.user.age,
-        addressType: this.user.addressType,
-        address1: this.user.address1,
-        address2: this.user.address2,
-        companyAddress1: this.user.companyAddress1,
-        companyAddress2: this.user.companyAddress2,
-      });
-    }
-  }
-
-  createEditForm() {
-    this.editForm = this.fb.group({
+    this.registrationForm = this.fb.group({
       profileImage: ['', [Validators.required, this.validateImageSize.bind(this)]],
       firstname: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+(?: [a-zA-Z]+)*$/), Validators.maxLength(20)]],
       lastname: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+(?: [a-zA-Z]+)*$/), Validators.maxLength(20)]],
       email: ['', [Validators.required, Validators.email]],
-      phoneNo: ['', [Validators.required, Validators.pattern(/^(\+\d{1,2}\s?)?((\(\d{3}\))|\d{3})[- .]?\d{3}[- .]?\d{4}$/)]],
+      phoneNo: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(
+            /^(\+\d{1,2}\s?)?((\(\d{3}\))|\d{3})[- .]?\d{3}[- .]?\d{4}$/
+          ),
+        ],
+      ],
       country: ['', Validators.required],
       state: ['', Validators.required],
       age: [''],
@@ -308,19 +280,25 @@ export class UserProfileComponent implements OnInit {
       address2: [''],
       companyAddress1: [''],
       companyAddress2: [''],
+      tags: [''],
+      subscribeToNewsletter: [false]
+    });
+    this.setProfileImage(this.userData.profileImage);
+  }
+  setProfileImage(imageName: string): void {
+    this.imageURL = this.commonService.generateImagePath(imageName);
+    // Set the form control value with the full image path
+    this.registrationForm.patchValue({
+      profileImage: this.imageURL
     });
   }
+  toggleForm() {
+    this.showForm = !this.showForm;
+}
 
-  editProfile() {
-    this.isEditing = true;
-  }
-
-  cancelEdit() {
-    this.isEditing = false;
-  }
-
-  formatLabel(value: number) {
-    return value + ' years';
+  onCancel() {
+    this.toggleForm();
+    this.registrationForm.reset();
   }
 
   onFileChange(event: any) {
@@ -329,45 +307,42 @@ export class UserProfileComponent implements OnInit {
       // Extract the file name from the fake path
       const fakePath: string = event.target.value;
       const imageName: string = fakePath.split('\\').pop() || '';
-
+  
       // Update the image URL with the correct path
       this.imageURL = this.commonService.generateImagePath(imageName);
-
+  
       // Optionally, you can also update the profileImage field in the form
       const fullPath = this.commonService.folderPath + imageName;
-      this.editForm.patchValue({
+      this.registrationForm.patchValue({
         profileImage: fullPath
       });
     }
   }
-
-  uploadImageToServer(imageFile: File) {
-    if (imageFile) {
-      const formData = new FormData();
-      formData.append('image', imageFile, 'avatar.png'); // Replace 'avatar.png' with the correct file name
-      this.commonService.uploadImage(formData).subscribe(
-        (response: any) => {
-          console.log('Image uploaded successfully:', response);
-        },
-        (error: any) => {
-          console.error('Error uploading image:', error);
-        }
-      );
-    }
+   uploadImageToServer(imageFile: File) {
+  if (imageFile) {
+    const formData = new FormData();
+    formData.append('image', imageFile, 'avatar.png'); // Replace 'avatar.png' with the correct file name
+    this.commonService.uploadImage(formData).subscribe(
+      (response: any) => {
+        console.log('Image uploaded successfully:', response);
+      },
+      (error: any) => {
+        console.error('Error uploading image:', error);
+      }
+    );
   }
+   }
 
-  submitForm() {
-    if (this.editForm.valid) {
-      const updatedUserData = this.editForm.value;
-      this.commonService.EditUser(this.userId, updatedUserData).subscribe(
+  onSubmit() {
+    if (this.registrationForm.valid) {
+      const userData = this.registrationForm.value;
+      this.commonService.AddUpdateUser(userData).subscribe(
         (response: any) => {
-          console.log('User updated successfully:', response);
-          this.isEditing = false;
-          this.editForm.reset();
-          this.loadLatestUser(); // Reload latest user data after update
+          console.log('User added/updated successfully:', response);
+          this.router.navigateByUrl('/User');
         },
         (error: any) => {
-          console.error('Error updating user:', error);
+          console.error('Error adding/updating user:', error);
         }
       );
     } else {
@@ -375,13 +350,23 @@ export class UserProfileComponent implements OnInit {
     }
   }
 
+  formatLabel(value: number) {
+    return value + ' years';
+  }
+
+  add(event: any) {
+    // Add tag logic here
+  }
+
   validateImageSize(control: AbstractControl): ValidationErrors | null {
     const file = control.value as File;
-
+  
+    // If no file is selected, return null (no validation error)
     if (!file) {
       return null;
     }
-
+  
+    // Check image size only if a file is selected
     if (file.size > this.maxImageSize) {
       return { invalidImageSize: true };
     }

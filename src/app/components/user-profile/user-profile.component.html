@@ -1,15 +1,15 @@
 <app-navbar></app-navbar>
 <body>
   <div class="profile-container">
-    <div *ngFor="let user of userdata" class="profile-photo">
+    <div *ngIf="user" class="profile-photo">
       <h5 style="color: blue;">Profile</h5>
       <img [src]="user.profileImage" alt="Profile Photo">
       <div class="photo-buttons">
-        <button>Edit Photo</button>
-        <button (click)="editProfile(user)">Edit Profile</button>
+        <button (click)="editProfile()">Edit Photo</button>
+        <button (click)="editProfile()">Edit Profile</button>
         </div>
       </div>
-        <div *ngFor="let user of userdata" class="user-info">
+        <div *ngIf="user" class="user-info">
           <ng-container *ngIf="!isEditing; else editFormSection">
             <p>I'm {{user.firstname}} {{user.lastname}} and I'm {{user.age}} years old.</p>
             <p>You can send your email to {{user.email}}. I live in the state of {{user.state}}.</p>
@@ -35,22 +35,79 @@
       <ng-template #editFormSection>
         <!-- Show edit form when editing -->
         <form [formGroup]="editForm" (ngSubmit)="submitForm()" class="row g-3">
-          <div class="col-md-6">
+          <label for="profileImage">Profile Image:</label>
+  <input type="file" id="profileImage" formControlName="profileImage" (change)="onFileChange($event)" accept="image/*">
+          <div class="col-md-3">
             <label for="firstName" class="form-label">First Name:</label>
-            <input type="text" id="firstName" formControlName="firstName" class="form-control">
+            <input type="text" id="firstName" formControlName="firstname" class="form-control">
           </div>
-          <div class="col-md-6">
+          <div class="col-md-3">
             <label for="lastName" class="form-label">Last Name:</label>
-            <input type="text" id="lastName" formControlName="lastName" class="form-control">
+            <input type="text" id="lastName" formControlName="lastname" class="form-control">
           </div>
-          <div class="col-12">
+          <div class="col-3">
             <label for="email" class="form-label">Email:</label>
             <input type="email" id="email" formControlName="email" class="form-control">
           </div>
-          <div class="col-12">
+          <div class="col-3">
             <label for="phoneNumber" class="form-label">Phone Number:</label>
-            <input type="text" id="phoneNumber" formControlName="phoneNumber" class="form-control">
+            <input type="text" id="phoneNumber" formControlName="phoneNo" class="form-control">
           </div>
+          <div class="col-3">
+          <select formControlName="country" (change)="onCountryChange()">
+            <option value="" disabled selected>Select Country</option>
+            <option *ngFor="let country of countries" [value]="country">
+              {{ country }}
+            </option>
+          </select>
+        </div>
+        <div class="col-3">
+          <select formControlName="state">
+            <option value="" disabled selected>Select State</option>
+            <option *ngFor="let state of states[country?.value]" [value]="state">
+              {{ state }}
+            </option>
+          </select>
+        </div>
+          <!-- Age slider -->
+          <div class="col-3">
+          <label class="ageLabel">Age</label>
+          <mat-slider showTickMarks min="0" max="100" step="1" discrete [displayWith]="formatLabel">
+            <input matSliderThumb formControlName="age" />
+          </mat-slider>
+        </div>
+          <br>
+          <!-- Address Type -->
+          <label for="addressType">Address Type:</label>
+          <select formControlName="addressType">
+            <option value="home">Home</option>
+            <option value="company">Company</option>
+          </select>
+          <br>
+          <!-- Address Fields (conditional) -->
+          <div class="col-12">
+          <div *ngIf="editForm.get('addressType')?.value === 'home'">
+            <div class="col-6">
+            <label for="address1">Home Address 1:</label>
+            <input type="text" formControlName="address1" /><br>
+          </div>
+            <div class="col-6">
+            <label for="address2">Home Address 2:</label>
+            <input type="text" formControlName="address2" />
+          </div>
+        </div>
+      </div>
+          
+          <div *ngIf="editForm.get('addressType')?.value === 'company'">
+            <div class="col-6">
+            <label for="companyAddress1">Company Address 1:</label>
+            <input type="text" formControlName="companyAddress1" />
+          </div>
+          <div class="col-6">
+            <label for="companyAddress2">Company Address 2:</label>
+            <input type="text" formControlName="companyAddress2" />
+          </div>
+        </div>
           <div class="col-12 d-flex justify-content-between">
             <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid">Save Changes</button>
             <button type="button" class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>

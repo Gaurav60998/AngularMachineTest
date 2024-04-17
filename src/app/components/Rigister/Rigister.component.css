@@ -6,6 +6,7 @@
     align-items: center;
     width: 0; /* Adjust as needed */
     color: black;
+    background-color: white;
 }
   
 
@@ -42,6 +43,7 @@
     padding: 10px;
     height: 700px; /* Fixed height for the form container */
   overflow-y: auto; /* Add scrollbar for overflow content */
+  
   }
   
   /* Show the popup when the showForm variable is true */
@@ -58,6 +60,7 @@
     float: right;
     cursor: pointer;
     background-color: aqua;
+    margin: 5px;
   }
   
   /* CSS for the registration form */
