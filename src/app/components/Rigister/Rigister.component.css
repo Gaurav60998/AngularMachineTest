@@ -27,22 +27,24 @@
     border: none;
     text-align: center;
     
+    
   }
   
 .form-popup {
     display: none; /* Hide the popup by default */
     position: fixed;
-    top: 20%; /* Position the popup at the center vertically */
+    top: 50%; /* Position the popup at the center vertically */
     left: 50%; /* Position the popup at the center horizontally */
     transform: translate(-50%, -50%); /* Center the popup */
     border: 1px solid #ccc;
-    z-index: 9;
+    z-index: 9999;
     background-color: #fff;
     width: 500px;
-    max-width: 700px;
+    max-width: 600px;
     padding: 10px;
-    height: 700px; /* Fixed height for the form container */
+    height: 470px; /* Fixed height for the form container */
   overflow-y: auto; /* Add scrollbar for overflow content */
+  margin-top: 5px;
   
   }
   

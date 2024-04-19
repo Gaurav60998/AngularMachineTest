@@ -1,30 +1,39 @@
-
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { Component, OnInit, Inject } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors} from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { MatDialogModule } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatSliderModule } from '@angular/material/slider';
-import { MatChipsModule } from '@angular/material/chips';
+import {   MatChipInputEvent,
+  MatChipEditedEvent,
+  MatChip,MatChipsModule } from '@angular/material/chips';
 import { CommonService } from '../../common.service';
 import { Router } from '@angular/router';
-import { NgxImageCompressService } from 'ngx-image-compress';
+import { tag } from "../../tag";
+import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { ENTER, COMMA } from '@angular/cdk/keycodes';
+import { MatIconModule } from '@angular/material/icon';
 
 
 @Component({
   selector: 'app-about',
   standalone: true,
-  imports: [CommonModule,MatDialogModule,ReactiveFormsModule,MatSliderModule,MatChipsModule],
+  imports: [CommonModule,MatDialogModule,ReactiveFormsModule,MatSliderModule,MatChipsModule,MatChip,MatIconModule],
   templateUrl: './Rigister.component.html',
   styleUrl: './Rigister.component.css'
 })
 export class AboutComponent implements OnInit {
   registrationForm!: FormGroup;
-  separatorKeysCodes: number[] = [13, 188];
-  addOnBlur = true;
   imageURL: string | ArrayBuffer | null = '';
   showForm: boolean = false;
-  maxImageSize: number = 100 * 1024;
+  maxFileSize: number = 1 * 1024 * 1024; // 1 MB
+  maxImageWidth: number = 310;
+  maxImageHeight: number = 325;
+  imagePreview!: string;
    userData: any = {};
    countries = [
     'India',
@@ -244,7 +253,7 @@ export class AboutComponent implements OnInit {
     ],
   };
 
-  constructor(private fb: FormBuilder, private commonService: CommonService, private router: Router, private imageCompress: NgxImageCompressService) { }
+  constructor(private fb: FormBuilder, private commonService: CommonService, private router: Router) { }
 
   get country() {
     return this.registrationForm.get('country');
@@ -259,7 +268,10 @@ export class AboutComponent implements OnInit {
   }
   ngOnInit(): void {
     this.registrationForm = this.fb.group({
-      profileImage: ['', [Validators.required, this.validateImageSize.bind(this)]],
+      profileImage: ['', [
+        // Remove Validators.required from here
+        this.validateImageSizeAndDimensions.bind(this)
+      ]],
       firstname: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+(?: [a-zA-Z]+)*$/), Validators.maxLength(20)]],
       lastname: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+(?: [a-zA-Z]+)*$/), Validators.maxLength(20)]],
       email: ['', [Validators.required, Validators.email]],
@@ -274,13 +286,13 @@ export class AboutComponent implements OnInit {
       ],
       country: ['', Validators.required],
       state: ['', Validators.required],
-      age: [''],
-      addressType: ['home'],
+      age: ['' ,Validators.required],
+      addressType: ['home',Validators.required],
       address1: [''],
       address2: [''],
       companyAddress1: [''],
       companyAddress2: [''],
-      tags: [''],
+      tags: [[], Validators.required],
       subscribeToNewsletter: [false]
     });
     this.setProfileImage(this.userData.profileImage);
@@ -304,34 +316,45 @@ export class AboutComponent implements OnInit {
   onFileChange(event: any) {
     const file: File = event.target.files[0];
     if (file) {
-      // Extract the file name from the fake path
+      // Read the file using FileReader
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+  
+      reader.onload = () => {
+        const img = new Image();
+        this.imagePreview = reader.result as string;
+        img.src = reader.result as string;
+  
+        img.onload = () => {
+          const width = img.width;
+          const height = img.height;
+          
+          // Check image dimensions
+          if (width > 310 || height > 325) {
+            this.registrationForm.get('profileImage')?.setErrors({ invalidImageDimensions: true });
+          } else {
+            this.registrationForm.get('profileImage')?.setErrors(null);
+          }
+        };
+  
+        // Check image size
+        if (file.size > 1024 * 1024) { // 1 MB in bytes
+          this.registrationForm.get('profileImage')?.setErrors({ invalidImageSize: true });
+        } else {
+          this.registrationForm.get('profileImage')?.setErrors(null);
+        }
+      };
+  
+      // Update the image URL
       const fakePath: string = event.target.value;
       const imageName: string = fakePath.split('\\').pop() || '';
-  
-      // Update the image URL with the correct path
       this.imageURL = this.commonService.generateImagePath(imageName);
-  
-      // Optionally, you can also update the profileImage field in the form
       const fullPath = this.commonService.folderPath + imageName;
       this.registrationForm.patchValue({
         profileImage: fullPath
       });
     }
   }
-   uploadImageToServer(imageFile: File) {
-  if (imageFile) {
-    const formData = new FormData();
-    formData.append('image', imageFile, 'avatar.png'); // Replace 'avatar.png' with the correct file name
-    this.commonService.uploadImage(formData).subscribe(
-      (response: any) => {
-        console.log('Image uploaded successfully:', response);
-      },
-      (error: any) => {
-        console.error('Error uploading image:', error);
-      }
-    );
-  }
-   }
 
   onSubmit() {
     if (this.registrationForm.valid) {
@@ -354,11 +377,52 @@ export class AboutComponent implements OnInit {
     return value + ' years';
   }
 
-  add(event: any) {
-    // Add tag logic here
+  addOnBlur = true;
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+  tags: tag[] = [{ name: 'Hockey' }];
+
+  announcer = Inject(LiveAnnouncer);
+
+  add(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    // Add our fruit
+    if (value) {
+      this.tags.push({ name: value });
+    }
+
+    // Clear the input value
+    event.chipInput!.clear();
   }
 
-  validateImageSize(control: AbstractControl): ValidationErrors | null {
+  remove(tag: tag): void {
+    const index = this.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.tags.splice(index, 1);
+
+      this.announcer.announce(`Removed ${tag}`);
+    }
+  }
+
+  edit(tag: tag, event: MatChipEditedEvent) {
+    const value = event.value.trim();
+
+    // Remove fruit if it no longer has a name
+    if (!value) {
+      this.remove(tag);
+      return;
+    }
+
+    // Edit existing fruit
+    const index = this.tags.indexOf(tag);
+    if (index >= 0) {
+      this.tags[index].name = value;
+    }
+  }
+
+
+  validateImageSizeAndDimensions(control: AbstractControl): ValidationErrors | null {
     const file = control.value as File;
   
     // If no file is selected, return null (no validation error)
@@ -366,10 +430,27 @@ export class AboutComponent implements OnInit {
       return null;
     }
   
-    // Check image size only if a file is selected
-    if (file.size > this.maxImageSize) {
-      return { invalidImageSize: true };
-    }
+    const reader = new FileReader();
+  
+    reader.onload = (event: any) => {
+      const img = new Image();
+      img.onload = () => {
+        const width = img.width;
+        const height = img.height;
+  
+        // Check image dimensions
+        if (width > 310 || height > 325) {
+          control.setErrors({ invalidImageDimensions: true });
+        } else {
+          control.setErrors(null);
+        }
+      };
+      img.src = event.target.result;
+    };
+  
+    // Read the file as a data URL
+    reader.readAsDataURL(file);
+  
     return null;
   }
-}
+}  

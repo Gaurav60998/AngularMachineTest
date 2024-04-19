@@ -9,7 +9,7 @@ export interface User {
     state:string;
     country:string;
     profileImage:string;
-    tags:string
+    tags:string;
     addressType:string;
     address1:string;
     address2:string;

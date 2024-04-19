@@ -34,35 +34,71 @@
       </div>
       <ng-template #editFormSection>
         <!-- Show edit form when editing -->
-        <form [formGroup]="editForm" (ngSubmit)="submitForm()" class="row g-3">
+        <form [formGroup]="editForm" (ngSubmit)="submitForm()" class="row g-3 edit-profile-form">
           <label for="profileImage">Profile Image:</label>
   <input type="file" id="profileImage" formControlName="profileImage" (change)="onFileChange($event)" accept="image/*">
-          <div class="col-md-3">
-            <label for="firstName" class="form-label">First Name:</label>
-            <input type="text" id="firstName" formControlName="firstname" class="form-control">
+  <small *ngIf="editForm.get('profileImage')?.invalid && (editForm.get('profileImage')?.dirty || editForm.get('profileImage')?.touched)">
+    <div *ngIf="editForm.get('profileImage')?.errors?.['required']" class="error-message">Profile image is required.</div>
+    <div *ngIf="editForm.get('profileImage')?.errors?.['invalidImageSize']" class="error-message">Profile image size should be less than 1 MB.</div>
+    <div *ngIf="editForm.get('profileImage')?.errors?.['invalidImageDimensions']" class="error-message">Profile image dimensions should be within 310x325 px.</div>
+  </small>  
+  <div class="col-md-12">
+    <img *ngIf="imagePreview" [src]="imagePreview" alt="Preview" style="width: 100px; height: 100px;">
+  </div>
+          <div class="col-md-6">
+            <label>
+              <span>Firstname</span>
+              <input type="text" class="input" formControlName="firstname" maxlength="20" />
+              <small *ngIf="editForm.get('firstname')?.invalid && (editForm.get('firstname')?.dirty || editForm.get('firstname')?.touched)" class="block p-error">
+                <div *ngIf="editForm.get('firstname')?.errors?.['required']"  class="error-message">Name is required.</div>
+                <div *ngIf="editForm.get('firstname')?.errors?.['pattern']"  class="error-message">Enter a valid Name</div>
+                <div *ngIf="editForm.get('firstname')?.errors?.['maxlength']"  class="error-message">Characters should be less than 20</div>
+              </small>
+            </label>
           </div>
-          <div class="col-md-3">
-            <label for="lastName" class="form-label">Last Name:</label>
-            <input type="text" id="lastName" formControlName="lastname" class="form-control">
+          <div class="col-md-6">
+            <label>
+              <span>Lastname</span>
+              <input type="text" class="input" formControlName="lastname"  maxlength="20" />
+              <small *ngIf="editForm.get('lastname')?.invalid && (editForm.get('lastname')?.dirty || editForm.get('lastname')?.touched)" class="block p-error">
+                <div *ngIf="editForm.get('lastname')?.errors?.['required']"  class="error-message">Name is required.</div>
+                <div *ngIf="editForm.get('lastname')?.errors?.['pattern']"  class="error-message">Enter a valid Name</div>
+                <div *ngIf="editForm.get('lastname')?.errors?.['maxlength']"  class="error-message">Characters should be less than 20</div>
+              </small>
+            </label>
           </div>
-          <div class="col-3">
-            <label for="email" class="form-label">Email:</label>
-            <input type="email" id="email" formControlName="email" class="form-control">
+          <div class="col-12">
+            <label>
+              <span>Email</span>
+              <input type="email" class="input" formControlName="email" />
+              <small *ngIf="editForm.get('email')?.invalid && (editForm.get('email')?.dirty || editForm.get('email')?.touched)" class="block p-error">
+                <div *ngIf="editForm.get('email')?.errors?.['required']"  class="error-message">Email is required.</div>
+                <div *ngIf="editForm.get('email')?.errors?.['email']"  class="error-message">Enter a valid email address.</div>
+              </small>
+            </label>
           </div>
-          <div class="col-3">
-            <label for="phoneNumber" class="form-label">Phone Number:</label>
-            <input type="text" id="phoneNumber" formControlName="phoneNo" class="form-control">
+          <div class="col-12">
+            <label>
+              <span>Phone Number</span>
+              <input type="tel" class="input" formControlName="phoneNo" maxlength="10" placeholder="9021545454"/> 
+            </label>
+            <div *ngIf="editForm.get('phoneNo')?.invalid && (editForm.get('phoneNo')?.dirty || editForm.get('phoneNo')?.touched)">
+              <div *ngIf="editForm.get('phoneNo')?.errors?.['required']" class="error-message">Phone number is required.</div>
+              <div *ngIf="editForm.get('phoneNo')?.errors?.['pattern']" class="error-message">Invalid Entry</div>
+            </div>
           </div>
-          <div class="col-3">
-          <select formControlName="country" (change)="onCountryChange()">
+          <div class="col-12">
+            <label >country</label>
+          <select formControlName="country" (change)="onCountryChange()" style="width: 100%;">
             <option value="" disabled selected>Select Country</option>
             <option *ngFor="let country of countries" [value]="country">
               {{ country }}
             </option>
           </select>
         </div>
-        <div class="col-3">
-          <select formControlName="state">
+        <div class="col-12">
+          <label >Select State</label>
+          <select formControlName="state" style="width: 100%;">
             <option value="" disabled selected>Select State</option>
             <option *ngFor="let state of states[country?.value]" [value]="state">
               {{ state }}
@@ -70,48 +106,74 @@
           </select>
         </div>
           <!-- Age slider -->
-          <div class="col-3">
+          <div class="col-12">
           <label class="ageLabel">Age</label>
-          <mat-slider showTickMarks min="0" max="100" step="1" discrete [displayWith]="formatLabel">
+          <mat-slider showTickMarks min="18" max="100" step="1" discrete [displayWith]="formatLabel"style="width: 100%;">
             <input matSliderThumb formControlName="age" />
           </mat-slider>
         </div>
           <br>
           <!-- Address Type -->
+          <div class="col-12">
           <label for="addressType">Address Type:</label>
-          <select formControlName="addressType">
+          <select formControlName="addressType"style="width: 100%;">
             <option value="home">Home</option>
             <option value="company">Company</option>
           </select>
+        </div>
           <br>
           <!-- Address Fields (conditional) -->
           <div class="col-12">
           <div *ngIf="editForm.get('addressType')?.value === 'home'">
-            <div class="col-6">
             <label for="address1">Home Address 1:</label>
             <input type="text" formControlName="address1" /><br>
-          </div>
-            <div class="col-6">
             <label for="address2">Home Address 2:</label>
             <input type="text" formControlName="address2" />
-          </div>
         </div>
-      </div>
-          
           <div *ngIf="editForm.get('addressType')?.value === 'company'">
-            <div class="col-6">
             <label for="companyAddress1">Company Address 1:</label>
             <input type="text" formControlName="companyAddress1" />
-          </div>
-          <div class="col-6">
             <label for="companyAddress2">Company Address 2:</label>
             <input type="text" formControlName="companyAddress2" />
           </div>
         </div>
-          <div class="col-12 d-flex justify-content-between">
-            <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid">Save Changes</button>
+        <div class="col-12">
+          <label >Tags</label>
+        <mat-chip-grid #chipGrid aria-label="Enter tag">
+          @for (tag of tags; track tag) {
+            <div class="col-6">
+          <mat-chip-row
+            (removed)="remove(tag)"
+            [editable]="true"
+            (edited)="edit(tag, $event)"
+            [aria-description]="'press enter to edit ' + tag.name"
+          >
+            {{ tag.name }}
+            <button matChipRemove [attr.aria-label]="'remove ' + tag.name">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip-row>
+        </div>
+          }
+          <div class="col-12">
+          <input
+            class="matInput"
+            formControlName="tags"
+            placeholder="New tags..."
+            [matChipInputFor]="chipGrid"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            [matChipInputAddOnBlur]="addOnBlur"
+            (matChipInputTokenEnd)="add($event)"
+          />
+        </div>
+        </mat-chip-grid>
+      </div>
+      <div class="col-12">
+          <div class="col-6 d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary" [disabled]="editForm.get('profileImage')?.invalid || editForm.get('profileImage')?.errors?.['required'] || editForm.invalid">Save Changes</button>
             <button type="button" class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
           </div>
+        </div>
         </form>
       </ng-template>
        

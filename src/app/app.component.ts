@@ -14,4 +14,5 @@ import { AboutComponent } from './components/Rigister/Rigister.component';
 })
 export class AppComponent {
   title = 'Test-App';
+  
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,Inject } from '@angular/core';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { HttpClient, HttpClientModule } from "@angular/common/http";
 import { NgModule } from "@angular/core";
@@ -11,11 +11,18 @@ import { MatDialog } from '@angular/material/dialog';
 import { User } from '../../user.interface';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatDialogModule } from '@angular/material/dialog';
+import { tag } from "../../tag";
+import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { ENTER, COMMA } from '@angular/cdk/keycodes';
+import { MatIconModule } from '@angular/material/icon';
+import {   MatChipInputEvent,
+  MatChipEditedEvent,
+  MatChip,MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [NavbarComponent,HttpClientModule,CommonModule,FormsModule,ReactiveFormsModule,MatSliderModule,AboutComponent,MatDialogModule],
+  imports: [NavbarComponent,HttpClientModule,MatChipsModule,CommonModule,MatChip,MatIconModule,FormsModule,ReactiveFormsModule,MatSliderModule,AboutComponent,MatDialogModule],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css'
 })
@@ -25,6 +32,7 @@ export class UserProfileComponent implements OnInit {
   maxImageSize: number = 100 * 1024;
   editForm!: FormGroup;
   isEditing: boolean = false;
+  imagePreview: string | ArrayBuffer | null = null;
   userId: any;
   countries = [
     'India',
@@ -289,7 +297,12 @@ export class UserProfileComponent implements OnInit {
         address2: this.user.address2,
         companyAddress1: this.user.companyAddress1,
         companyAddress2: this.user.companyAddress2,
+        tags:this.user.tags,
       });
+      if (this.user.profileImage) {
+        // Set the old profile image
+        this.imagePreview = this.user.profileImage;
+      }
     }
   }
 
@@ -302,12 +315,13 @@ export class UserProfileComponent implements OnInit {
       phoneNo: ['', [Validators.required, Validators.pattern(/^(\+\d{1,2}\s?)?((\(\d{3}\))|\d{3})[- .]?\d{3}[- .]?\d{4}$/)]],
       country: ['', Validators.required],
       state: ['', Validators.required],
-      age: [''],
-      addressType: ['home'],
+      age: ['' ,Validators.required],
+      addressType: ['home',Validators.required],
       address1: [''],
       address2: [''],
       companyAddress1: [''],
       companyAddress2: [''],
+      tags: [[], Validators.required],
     });
   }
 
@@ -326,7 +340,12 @@ export class UserProfileComponent implements OnInit {
   onFileChange(event: any) {
     const file: File = event.target.files[0];
     if (file) {
-      // Extract the file name from the fake path
+      const reader = new FileReader();
+      reader.onload = () => {
+        // Update the image preview variable with the data URL
+        this.imagePreview = reader.result;
+      };
+      reader.readAsDataURL(file);
       const fakePath: string = event.target.value;
       const imageName: string = fakePath.split('\\').pop() || '';
 
@@ -365,6 +384,9 @@ export class UserProfileComponent implements OnInit {
           this.isEditing = false;
           this.editForm.reset();
           this.loadLatestUser(); // Reload latest user data after update
+          this.editForm.patchValue({
+            profileImage: this.imageURL
+          });
         },
         (error: any) => {
           console.error('Error updating user:', error);
@@ -374,17 +396,64 @@ export class UserProfileComponent implements OnInit {
       console.error('Form is invalid.');
     }
   }
+  addOnBlur = true;
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+  tags: tag[] = [{ name: 'Hockey' }];
+
+  announcer = Inject(LiveAnnouncer);
+
+  add(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    // Add our fruit
+    if (value) {
+      this.tags.push({ name: value });
+    }
+
+    // Clear the input value
+    event.chipInput!.clear();
+  }
+
+  remove(tag: tag): void {
+    const index = this.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.tags.splice(index, 1);
+
+      this.announcer.announce(`Removed ${tag}`);
+    }
+  }
+
+  edit(tag: tag, event: MatChipEditedEvent) {
+    const value = event.value.trim();
+
+    // Remove fruit if it no longer has a name
+    if (!value) {
+      this.remove(tag);
+      return;
+    }
+
+    // Edit existing fruit
+    const index = this.tags.indexOf(tag);
+    if (index >= 0) {
+      this.tags[index].name = value;
+    }
+  }
+
 
   validateImageSize(control: AbstractControl): ValidationErrors | null {
     const file = control.value as File;
 
-    if (!file) {
-      return null;
+    // Check if file is required
+    if (control.hasError('required') && !file) {
+      return { required: true };
     }
 
-    if (file.size > this.maxImageSize) {
+    // Check if file size exceeds the maximum allowed size
+    if (file && file.size > this.maxImageSize) {
       return { invalidImageSize: true };
     }
-    return null;
+
+    return null; // Return null if validation passes
   }
 }

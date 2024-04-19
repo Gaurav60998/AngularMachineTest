@@ -90,3 +90,24 @@ app-navbar {
     justify-items: center;
     align-items: center;
   }
+  .edit-profile-form {
+    border: 2px solid black;
+    background-color: white;
+    border-radius: 10px; /* Optional: Adds rounded corners */
+    padding: 20px;
+    margin: 20px;
+    height: 500px;
+    width: 500px;
+    overflow-y: auto; /* Enables vertical scroll when content exceeds height */
+  }
+  
+  /* Apply these styles to each input, select, etc. */
+  .edit-profile-form input,
+  .edit-profile-form select {
+    width: 100%;
+    margin-bottom: 10px; /* Optional: Adds spacing between form elements */
+  }
+  .error-message {
+    color: red;
+    font-size: 12px;
+  }

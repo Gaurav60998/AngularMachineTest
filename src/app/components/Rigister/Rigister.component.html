@@ -1,133 +1,186 @@
 <div class="container">
-<div class="register-container">
-    <button (click)="toggleForm()" class="register text-center" style="background-color: aqua;  width: 150px; border: none;">Register</button>
+  <div class="register-container">
+    <button (click)="toggleForm()" class="register text-center" style="background-color: aqua; width: 150px; border: none;">Register</button>
   </div>
-<div *ngIf="showForm" class="form-popup show">
-  <span class="close" (click)="toggleForm()">&times;</span>
-  <p mat-dialog-title class="title m-2 ml-4" style="background-color: blue; ">Register</p>
-  <mat-dialog-content class="mat-typography">
-    <!-- Registration Form -->
-    <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
-      <!-- Profile Image -->
-      <label for="profileImage">Profile Image:</label>
-  <input type="file" id="profileImage" formControlName="profileImage" (change)="onFileChange($event)" accept="image/*">
-  <div *ngIf="registrationForm.get('profileImage')?.invalid && (registrationForm.get('profileImage')?.dirty || registrationForm.get('profileImage')?.touched)">
-    <div *ngIf="registrationForm.get('profileImage')?.errors?.['required']" class="error-message">Profile image is required.</div>
-    <div *ngIf="registrationForm.get('profileImage')?.errors?.['invalidImageSize']" class="error-message" class="error-message">Profile image size should be less than {{ maxImageSize / 1024 }} KB.</div>
-  </div>
-      <!-- Firstname and Lastname -->
-      <label>
-        <span>Firstname</span>
-        <input type="text" class="input" formControlName="firstname" maxlength="20" />
-        <small *ngIf="registrationForm.get('firstname')?.invalid && (registrationForm.get('firstname')?.dirty || registrationForm.get('firstname')?.touched)" class="block p-error">
-          <div *ngIf="registrationForm.get('firstname')?.errors?.['required']"  class="error-message">Name is required.</div>
-          <div *ngIf="registrationForm.get('firstname')?.errors?.['pattern']"  class="error-message">Enter a valid Name</div>
-          <div *ngIf="registrationForm.get('firstname')?.errors?.['maxlength']"  class="error-message">Characters should be less than 20</div>
-        </small>
-      </label>
-      <label>
-        <span>Lastname</span>
-        <input type="text" class="input" formControlName="lastname"  maxlength="20" />
-        <small *ngIf="registrationForm.get('lastname')?.invalid && (registrationForm.get('lastname')?.dirty || registrationForm.get('lastname')?.touched)" class="block p-error">
-          <div *ngIf="registrationForm.get('lastname')?.errors?.['required']"  class="error-message">Name is required.</div>
-          <div *ngIf="registrationForm.get('lastname')?.errors?.['pattern']"  class="error-message">Enter a valid Name</div>
-          <div *ngIf="registrationForm.get('lastname')?.errors?.['maxlength']"  class="error-message">Characters should be less than 20</div>
-        </small>
-      </label>
-      <!-- Email -->
-      <label>
-        <span>Email</span>
-        <input type="email" class="input" formControlName="email" />
-        <small *ngIf="registrationForm.get('email')?.invalid && (registrationForm.get('email')?.dirty || registrationForm.get('email')?.touched)" class="block p-error">
-          <div *ngIf="registrationForm.get('email')?.errors?.['required']"  class="error-message">Email is required.</div>
-          <div *ngIf="registrationForm.get('email')?.errors?.['email']"  class="error-message">Enter a valid email address.</div>
-        </small>
-      </label>
-      <!-- Phone Number -->
-      <label>
-        <span>phoneNumber</span>
-        <input type="tel" class="input" formControlName="phoneNo" maxlength="10" placeholder="9021545454"/> 
-      </label>
-      <div
-      *ngIf="
-        registrationForm.get('phoneNo')?.invalid &&
-        (registrationForm.get('phoneNo')?.dirty ||
-          registrationForm.get('phoneNo')?.touched)
-      "
-    >
-      <div
-        *ngIf="registrationForm.get('phoneNo')?.errors?.['required']"
-        class="error-message"
-      >
-        phoneNo is required.
+  <div *ngIf="showForm" class="form-popup show">
+    <span class="close" (click)="toggleForm()">&times;</span>
+    <p mat-dialog-title class="title m-2 ml-4" style="background-color: blue; width: 100%; padding: 0; margin: 0; margin-top: 0; padding-top: 0;">Register</p>
+    <mat-dialog-content class="mat-typography">
+      <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="photo-upload">
+              <img src="{{ imagePreview }}" class="img-fluid rounded-top" alt="Preview" *ngIf="imagePreview" style="width:200px; height: 200px;">
+              <label>
+              <div class="input-row">
+                <label for="profileImage">Profile Image</label><br>
+                <strong>(Max. 310x325 px, 1 MB)</strong>
+                <input type="file" id="profileImage" formControlName="profileImage" (change)="onFileChange($event)" accept="image/*"style="font-size: 10px;">
+                <small *ngIf="registrationForm.get('profileImage')?.invalid && (registrationForm.get('profileImage')?.dirty || registrationForm.get('profileImage')?.touched)">
+                  <div *ngIf="registrationForm.get('profileImage')?.errors?.['required']" class="error-message">Profile image is required.</div>
+                  <div *ngIf="registrationForm.get('profileImage')?.errors?.['invalidImageSize']" class="error-message">Profile image size should be less than 1 MB.</div>
+                  <div *ngIf="registrationForm.get('profileImage')?.errors?.['invalidImageDimensions']" class="error-message">Profile image dimensions should be within 310x325 px.</div>
+                </small>                
+              </div>
+            </label>
+            </div>
+          </div>
+          <div class="col-md-8 mt-3">
+            <div class="form-fields">
+              <div class="row">
+                <div class="col-md-6">
+                  <label>
+                    <span>Firstname</span>
+                    <input type="text" class="input" formControlName="firstname" maxlength="20" />
+                    <small *ngIf="registrationForm.get('firstname')?.invalid && (registrationForm.get('firstname')?.dirty || registrationForm.get('firstname')?.touched)" class="block p-error">
+                      <div *ngIf="registrationForm.get('firstname')?.errors?.['required']"  class="error-message">Name is required.</div>
+                      <div *ngIf="registrationForm.get('firstname')?.errors?.['pattern']"  class="error-message">Enter a valid Name</div>
+                      <div *ngIf="registrationForm.get('firstname')?.errors?.['maxlength']"  class="error-message">Characters should be less than 20</div>
+                    </small>
+                  </label>
+                </div>
+                <div class="col-md-6">
+                  <label>
+                    <span>Lastname</span>
+                    <input type="text" class="input" formControlName="lastname"  maxlength="20" />
+                    <small *ngIf="registrationForm.get('lastname')?.invalid && (registrationForm.get('lastname')?.dirty || registrationForm.get('lastname')?.touched)" class="block p-error">
+                      <div *ngIf="registrationForm.get('lastname')?.errors?.['required']"  class="error-message">Name is required.</div>
+                      <div *ngIf="registrationForm.get('lastname')?.errors?.['pattern']"  class="error-message">Enter a valid Name</div>
+                      <div *ngIf="registrationForm.get('lastname')?.errors?.['maxlength']"  class="error-message">Characters should be less than 20</div>
+                    </small>
+                  </label>
+                </div>
+              </div>
+                          <!-- Email -->
+                <div class="col-md-12">
+                  <label>
+                    <span>Email</span>
+                    <input type="email" class="input" formControlName="email" />
+                    <small *ngIf="registrationForm.get('email')?.invalid && (registrationForm.get('email')?.dirty || registrationForm.get('email')?.touched)" class="block p-error">
+                      <div *ngIf="registrationForm.get('email')?.errors?.['required']"  class="error-message">Email is required.</div>
+                      <div *ngIf="registrationForm.get('email')?.errors?.['email']"  class="error-message">Enter a valid email address.</div>
+                    </small>
+                  </label>
+                </div>
+                <div class="col-md-12">
+                  <!-- Phone Number -->
+                  <label>
+                    <span>Phone Number</span>
+                    <input type="tel" class="input" formControlName="phoneNo" maxlength="10" placeholder="9021545454"/> 
+                  </label>
+                  <div *ngIf="registrationForm.get('phoneNo')?.invalid && (registrationForm.get('phoneNo')?.dirty || registrationForm.get('phoneNo')?.touched)">
+                    <div *ngIf="registrationForm.get('phoneNo')?.errors?.['required']" class="error-message">Phone number is required.</div>
+                    <div *ngIf="registrationForm.get('phoneNo')?.errors?.['pattern']" class="error-message">Invalid Entry</div>
+                  </div>
+                </div>
+
+              <!-- Country and State -->
+                <div class="col-md-12">
+                  <label>
+                    <span>Country</span>
+                    <select formControlName="country" (change)="onCountryChange()">
+                      <option value="" disabled selected>Select Country</option>
+                      <!-- Populate options dynamically using *ngFor -->
+                      <option *ngFor="let country of countries" [value]="country">{{ country }}</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="col-md-12">
+                  <label>
+                    <span>State</span>
+                    <select formControlName="state">
+                      <option value="" disabled selected>Select State</option>
+                      <!-- Populate options dynamically based on selected country -->
+                      <option *ngFor="let state of states[country?.value]" [value]="state">{{ state }}</option>
+                    </select>
+                  </label>
+                </div>
+              <!-- Age slider -->
+              <div class="row">
+                <div class="col-md-12">
+                  <label class="ageLabel">Age</label>
+                  <mat-slider showTickMarks min="0" max="100" step="1" discrete [displayWith]="formatLabel">
+                    <input matSliderThumb formControlName="age" />
+                  </mat-slider>
+                </div>
+              </div>
+              <!-- Address Type and Address Fields (conditional) -->
+              <div class="row">
+                <div class="col-md-12">
+                  <label for="addressType">Address Type:</label>
+                  <select formControlName="addressType">
+                    <option value="home">Home</option>
+                    <option value="company">Company</option>
+                  </select>
+                </div>
+                <div class="col-md-12">
+                  <div *ngIf="registrationForm.get('addressType')?.value === 'home'">
+                    <label for="address1">Home Address 1:</label>
+                    <input type="text" formControlName="address1" /><br>
+                    <label for="address2">Home Address 2:</label>
+                    <input type="text" formControlName="address2" />
+                  </div>
+                  <div *ngIf="registrationForm.get('addressType')?.value === 'company'">
+                    <label for="companyAddress1">Company Address 1:</label>
+                    <input type="text" formControlName="companyAddress1" />
+                    <label for="companyAddress2">Company Address 2:</label>
+                    <input type="text" formControlName="companyAddress2" />
+                  </div>
+                </div>
+              </div>
+              <!-- Tags -->
+              <div class="row">
+                  <mat-chip-grid #chipGrid aria-label="Enter tag">
+                    <div class="col-md-12">
+        @for (tag of tags; track tag) {
+        <mat-chip-row
+          (removed)="remove(tag)"
+          [editable]="true"
+          (edited)="edit(tag, $event)"
+          [aria-description]="'press enter to edit ' + tag.name"
+        >
+          {{ tag.name }}
+          <button matChipRemove [attr.aria-label]="'remove ' + tag.name">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip-row>
+        }
       </div>
-      <div
-        *ngIf="registrationForm.get('phoneNo')?.errors?.['pattern']"
-        class="error-message"
-      >
-        Invalid Entry
+        <div class="col-md-12">
+        <input
+          class="matInput"
+          formControlName="tags"
+          placeholder="New tags..."
+          [matChipInputFor]="chipGrid"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          [matChipInputAddOnBlur]="addOnBlur"
+          (matChipInputTokenEnd)="add($event)"
+        />
       </div>
-    </div>
-      <!-- Country and State -->
-      <select formControlName="country" (change)="onCountryChange()">
-        <option value="" disabled selected>Select Country</option>
-        <option *ngFor="let country of countries" [value]="country">
-          {{ country }}
-        </option>
-      </select>
-      
-      <select formControlName="state">
-        <option value="" disabled selected>Select State</option>
-        <option *ngFor="let state of states[country?.value]" [value]="state">
-          {{ state }}
-        </option>
-      </select>
-      <!-- Age slider -->
-      <label class="ageLabel">Age</label>
-      <mat-slider showTickMarks min="0" max="100" step="1" discrete [displayWith]="formatLabel">
-        <input matSliderThumb formControlName="age" />
-      </mat-slider>
-      <br>
-      <!-- Address Type -->
-      <label for="addressType">Address Type:</label>
-      <select formControlName="addressType">
-        <option value="home">Home</option>
-        <option value="company">Company</option>
-      </select>
-      <br>
-      <!-- Address Fields (conditional) -->
-      <div *ngIf="registrationForm.get('addressType')?.value === 'home'">
-        <label for="address1">Home Address 1:</label>
-        <input type="text" formControlName="address1" /><br>
-        <label for="address2">Home Address 2:</label>
-        <input type="text" formControlName="address2" />
-      </div>
-      <div *ngIf="registrationForm.get('addressType')?.value === 'company'">
-        <label for="companyAddress1">Company Address 1:</label>
-        <input type="text" formControlName="companyAddress1" />
-        <label for="companyAddress2">Company Address 2:</label>
-        <input type="text" formControlName="companyAddress2" />
-      </div>
-      <!-- Tags -->
-      <br>
-      <mat-chip-grid #chipGrid aria-label="Enter fruits">
-        <span>Tags</span><br>
-        <input class="matInput" formControlName="tags" placeholder="New Hobby..." [matChipInputFor]="chipGrid"
-          [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="add($event)" />
       </mat-chip-grid>
-      <!-- Subscribe to Newsletter -->
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" formControlName="subscribeToNewsletter" />
-        <label class="form-check-label" for="inlineCheckbox1">Subscribe to newsletter</label>
-      </div>
-      <br>
-      <br>
-      <!-- Form Buttons -->
-      <mat-dialog-actions align="end">
-        <button class="submit cancel-button" (click)="onCancel()" mat-dialog-close>Cancel</button>
-        <button class="submit submit-button mr-5 pl-5 pr-5" type="submit">Submit</button>
-      </mat-dialog-actions>
-    </form>
-  </mat-dialog-content>
-</div>
+              </div>
+              <!-- Subscribe to Newsletter -->
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" formControlName="subscribeToNewsletter" />
+                    <label class="form-check-label" for="inlineCheckbox1">Subscribe to newsletter</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mt-3 mb-2">
+                <div class="col">
+                  <mat-dialog-actions align="end">
+                    <button class="submit cancel-button" (click)="onCancel()" mat-dialog-close>Cancel</button>
+                    <button type="submit"[disabled]="registrationForm.get('profileImage')?.invalid || registrationForm.get('profileImage')?.errors?.['required'] || registrationForm.invalid">Submit</button>
+                  </mat-dialog-actions>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </mat-dialog-content>
+  </div>
 </div>
