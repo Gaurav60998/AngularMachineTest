@@ -17,8 +17,7 @@
                 <strong>(Max. 310x325 px, 1 MB)</strong>
                 <input type="file" id="profileImage" formControlName="profileImage" (change)="onFileChange($event)" accept="image/*"style="font-size: 10px;">
                 <small *ngIf="registrationForm.get('profileImage')?.invalid && (registrationForm.get('profileImage')?.dirty || registrationForm.get('profileImage')?.touched)">
-                  <div *ngIf="registrationForm.get('profileImage')?.errors?.['required']" class="error-message">Profile image is required.</div>
-                  <div *ngIf="registrationForm.get('profileImage')?.errors?.['invalidImageSize']" class="error-message">Profile image size should be less than 1 MB.</div>
+                  <div *ngIf="registrationForm.get('profileImage')?.errors?.['required']" class="error-message">Profile image is required.</div>                  <div *ngIf="registrationForm.get('profileImage')?.errors?.['invalidImageSize']" class="error-message">Profile image size should be less than 1 MB.</div>
                   <div *ngIf="registrationForm.get('profileImage')?.errors?.['invalidImageDimensions']" class="error-message">Profile image dimensions should be within 310x325 px.</div>
                 </small>                
               </div>

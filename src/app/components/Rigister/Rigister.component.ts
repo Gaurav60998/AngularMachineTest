@@ -268,8 +268,7 @@ export class AboutComponent implements OnInit {
   }
   ngOnInit(): void {
     this.registrationForm = this.fb.group({
-      profileImage: ['', [
-        // Remove Validators.required from here
+      profileImage: ['', [Validators.required,
         this.validateImageSizeAndDimensions.bind(this)
       ]],
       firstname: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+(?: [a-zA-Z]+)*$/), Validators.maxLength(20)]],
