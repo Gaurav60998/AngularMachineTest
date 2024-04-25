@@ -1,10 +1,13 @@
-<div class="container">
+<div class="container" style=" padding-left: 0px;
+padding-right: 0px;
+margin-top: 60px;"
+>
   <div class="register-container">
-    <button (click)="toggleForm()" class="register text-center" style="background-color: aqua; width: 150px; border: none;">Register</button>
+    <button (click)="toggleForm()" class="register text-center" style="background-color: aqua; width: 150px; border: none; border-bottom: 3px solid #e8e5e5;">Register</button>
   </div>
   <div *ngIf="showForm" class="form-popup show">
     <span class="close" (click)="toggleForm()">&times;</span>
-    <p mat-dialog-title class="title m-2 ml-4" style="background-color: blue; width: 100%; padding: 0; margin: 0; margin-top: 0; padding-top: 0;">Register</p>
+    <p mat-dialog-title class="title m-2 ml-4" style="width: 100%; padding: 0; margin: 0; margin-top: 0; padding-top: 0;  font-size: 28px; border-bottom: 3px solid #3b14d7; padding-bottom: 10px;">Register</p>
     <mat-dialog-content class="mat-typography">
       <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
         <div class="row">
@@ -14,10 +17,11 @@
               <label>
               <div class="input-row">
                 <label for="profileImage">Profile Image</label><br>
-                <strong>(Max. 310x325 px, 1 MB)</strong>
+                <strong><h6>(Max. 310x325 px, 1 MB)</h6></strong>
                 <input type="file" id="profileImage" formControlName="profileImage" (change)="onFileChange($event)" accept="image/*"style="font-size: 10px;">
                 <small *ngIf="registrationForm.get('profileImage')?.invalid && (registrationForm.get('profileImage')?.dirty || registrationForm.get('profileImage')?.touched)">
-                  <div *ngIf="registrationForm.get('profileImage')?.errors?.['required']" class="error-message">Profile image is required.</div>                  <div *ngIf="registrationForm.get('profileImage')?.errors?.['invalidImageSize']" class="error-message">Profile image size should be less than 1 MB.</div>
+                  <div *ngIf="registrationForm.get('profileImage')?.errors?.['required']" class="error-message">Profile image is required.</div>              
+                  <div *ngIf="registrationForm.get('profileImage')?.errors?.['invalidImageSize']" class="error-message">Profile image size should be less than 1 MB.</div>
                   <div *ngIf="registrationForm.get('profileImage')?.errors?.['invalidImageDimensions']" class="error-message">Profile image dimensions should be within 310x325 px.</div>
                 </small>                
               </div>
@@ -100,6 +104,7 @@
                   <label class="ageLabel">Age</label>
                   <mat-slider showTickMarks min="18" max="100" step="1" discrete [displayWith]="formatLabel">
                     <input matSliderThumb formControlName="age" />
+                    <div *ngIf="registrationForm.get('age')?.errors?.['required']"  class="error-message">Name is required.</div>
                   </mat-slider>
                 </div>
               </div>

@@ -11,6 +11,7 @@
       </div>
         <div *ngIf="user" class="user-info">
           <ng-container *ngIf="!isEditing; else editFormSection">
+            <strong>User Profile</strong>
             <p>I'm {{user.firstname}} {{user.lastname}} and I'm {{user.age}} years old.</p>
             <p>You can send your email to {{user.email}}. I live in the state of {{user.state}}.</p>
             <p>I like to play {{user.tags}}, and reading books. Please send me newsletters.</p>

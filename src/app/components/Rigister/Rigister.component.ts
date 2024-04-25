@@ -17,6 +17,8 @@ import { tag } from "../../tag";
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 
 
 @Component({
@@ -253,7 +255,7 @@ export class AboutComponent implements OnInit {
     ],
   };
 
-  constructor(private fb: FormBuilder, private commonService: CommonService, private router: Router) { }
+  constructor(private fb: FormBuilder, private commonService: CommonService, private router: Router,  private snackBar: MatSnackBar) { }
 
   get country() {
     return this.registrationForm.get('country');
@@ -279,8 +281,8 @@ export class AboutComponent implements OnInit {
         [
           Validators.required,
           Validators.pattern(
-            /^(\+\d{1,2}\s?)?((\(\d{3}\))|\d{3})[- .]?\d{3}[- .]?\d{4}$/
-          ),
+        /^(\+\d{1,2}\s?)?[7-9]\d{9}$/
+      ),
         ],
       ],
       country: ['', Validators.required],
@@ -315,18 +317,45 @@ export class AboutComponent implements OnInit {
   onFileChange(event: any) {
     const file: File = event.target.files[0];
     if (file) {
+      if (file.size > this.maxFileSize || file.type.split('/')[0] !== 'image') {
+        this.snackBar.open('Invalid file. Please select a valid image file.', 'Close', {
+          duration: 5000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        });
+        event.target.value = ''; // Reset input field to clear selected file
+        this.registrationForm.get('profileImage')?.setErrors({ invalidFile: true }); // Mark profileImage control as invalid
+        this.imagePreview = ''; // Clear image preview
+        return;
+      }
+  
       // Read the file using FileReader
       const reader = new FileReader();
       reader.readAsDataURL(file);
   
       reader.onload = () => {
+        // Create an image element
         const img = new Image();
-        this.imagePreview = reader.result as string;
         img.src = reader.result as string;
   
+        // After the image has been loaded
         img.onload = () => {
           const width = img.width;
           const height = img.height;
+          
+          if (width > this.maxImageWidth || height > this.maxImageHeight) { // Check against maxImageWidth and maxImageHeight
+            // Display snackbar alert for invalid image dimensions
+            this.snackBar.open(`Invalid image dimensions. Please select an image with dimensions less than ${this.maxImageWidth}x${this.maxImageHeight}.`, 'Close', {
+              duration: 0, // Duration in milliseconds
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom'
+            });
+            event.target.value = ''; // Reset input field to clear selected file
+            this.registrationForm.get('profileImage')?.setErrors({ invalidFile: true }); // Mark profileImage control as invalid
+            this.imagePreview = ''; // Clear image preview
+
+            return;
+          }
           
           // Check image dimensions
           if (width > 310 || height > 325) {
@@ -334,26 +363,23 @@ export class AboutComponent implements OnInit {
           } else {
             this.registrationForm.get('profileImage')?.setErrors(null);
           }
+          
+          // Update the image URL
+          this.imagePreview = reader.result as string;
+          const fakePath: string = event.target.value;
+          const imageName: string = fakePath.split('\\').pop() || '';
+          console.log('Image Name:', imageName); // Log image name for debugging
+          this.imageURL = this.commonService.generateImagePath(imageName);
+          const fullPath = this.commonService.folderPath + imageName;
+          this.registrationForm.patchValue({
+            profileImage: fullPath
+          });
         };
-  
-        // Check image size
-        if (file.size > 1024 * 1024) { // 1 MB in bytes
-          this.registrationForm.get('profileImage')?.setErrors({ invalidImageSize: true });
-        } else {
-          this.registrationForm.get('profileImage')?.setErrors(null);
-        }
       };
-  
-      // Update the image URL
-      const fakePath: string = event.target.value;
-      const imageName: string = fakePath.split('\\').pop() || '';
-      this.imageURL = this.commonService.generateImagePath(imageName);
-      const fullPath = this.commonService.folderPath + imageName;
-      this.registrationForm.patchValue({
-        profileImage: fullPath
-      });
     }
   }
+  
+  
 
   onSubmit() {
     if (this.registrationForm.valid) {

@@ -154,4 +154,41 @@
     justify-items: center;
     align-items: center;
   }
+  @media only screen and (max-width: 768px) {
+    .hero {
+      padding: 10px;
+    }
+    .name1,
+    .search,
+    .disply,
+    .about,
+    .box {
+      max-width: 600px;
+    }
+  }
+  @media only screen and (max-width: 425px) {
+    .hero {
+      padding: 5px;
+    }
+    .name1,
+    .search,
+    .disply,
+    .about,
+    .box {
+      max-width: 400px;
+    }
+    .image-overlay,
+    #location{
+      max-width: 100px;
+    }
+    .box-sm {
+      width: 80px;
+      height: 4px;
+      margin: 5px;
+    }
+    footer {
+      padding: 10px;
+      margin: 20px;
+    }
+  }
   

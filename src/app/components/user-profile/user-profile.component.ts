@@ -18,18 +18,20 @@ import { MatIconModule } from '@angular/material/icon';
 import {   MatChipInputEvent,
   MatChipEditedEvent,
   MatChip,MatChipsModule } from '@angular/material/chips';
+  import { MatSnackBar } from '@angular/material/snack-bar';
+  import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [NavbarComponent,HttpClientModule,MatChipsModule,CommonModule,MatChip,MatIconModule,FormsModule,ReactiveFormsModule,MatSliderModule,AboutComponent,MatDialogModule],
+  imports: [NavbarComponent,HttpClientModule,MatChipsModule,MatFormFieldModule,CommonModule,MatChip,MatIconModule,FormsModule,ReactiveFormsModule,MatSliderModule,AboutComponent,MatDialogModule],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css'
 })
 export class UserProfileComponent implements OnInit {
   user:User | undefined; 
   imageURL: string | ArrayBuffer | null = '';
-  maxImageSize: number = 100 * 1024;
+  maxFileSize: number = 1 * 1024 * 1024; 
   editForm!: FormGroup;
   isEditing: boolean = false;
   imagePreview: string | ArrayBuffer | null = null;
@@ -253,7 +255,7 @@ export class UserProfileComponent implements OnInit {
   };
 
 
-  constructor(private commonService: CommonService, private fb: FormBuilder, public dialog: MatDialog) { }
+  constructor(private commonService: CommonService, private fb: FormBuilder, public dialog: MatDialog,  private snackBar: MatSnackBar) { }
   get country() {
     return this.editForm.get('country');
   }
@@ -266,9 +268,9 @@ export class UserProfileComponent implements OnInit {
     this.state?.setValue('');
   }
  
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    await this.loadLatestUser(); // Use async/await to ensure loadLatestUser() completes before calling populateEditForm()
     this.createEditForm();
-    this.loadLatestUser();
     this.commonService.getLatestUser().subscribe(user => {
       this.user = user;
     });
@@ -325,9 +327,11 @@ export class UserProfileComponent implements OnInit {
     });
   }
 
-  editProfile() {
+  async editProfile() {
     this.isEditing = true;
+    await this.loadLatestUser(); // Wait for the latest user data to be loaded before populating the form
   }
+  
 
   cancelEdit() {
     this.isEditing = false;
@@ -449,8 +453,13 @@ export class UserProfileComponent implements OnInit {
       return { required: true };
     }
 
-    // Check if file size exceeds the maximum allowed size
-    if (file && file.size > this.maxImageSize) {
+    if (file && file.size > this.maxFileSize) {
+      // Display error message using snackbar
+      this.snackBar.open('Image size exceeds the maximum allowed size', 'Close', {
+        duration: 5000,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom'
+      });
       return { invalidImageSize: true };
     }
 

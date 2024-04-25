@@ -95,8 +95,8 @@ app-navbar {
     background-color: white;
     border-radius: 10px; /* Optional: Adds rounded corners */
     padding: 20px;
-    margin: 20px;
-    height: 500px;
+    margin: 10px;
+    height: 400px;
     width: 500px;
     overflow-y: auto; /* Enables vertical scroll when content exceeds height */
   }

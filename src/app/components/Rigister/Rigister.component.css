@@ -33,18 +33,19 @@
 .form-popup {
     display: none; /* Hide the popup by default */
     position: fixed;
-    top: 50%; /* Position the popup at the center vertically */
+    top: 4%; /* Position the popup at the center vertically */
     left: 50%; /* Position the popup at the center horizontally */
-    transform: translate(-50%, -50%); /* Center the popup */
+    transform: translate(-30%, -40%); /* Center the popup */
     border: 1px solid #ccc;
     z-index: 9999;
     background-color: #fff;
     width: 500px;
     max-width: 600px;
-    padding: 10px;
+    padding: 2px;
     height: 470px; /* Fixed height for the form container */
   overflow-y: auto; /* Add scrollbar for overflow content */
   margin-top: 5px;
+  border-radius: 5px;
   
   }
   
@@ -61,8 +62,10 @@
   .close {
     float: right;
     cursor: pointer;
-    background-color: aqua;
-    margin: 5px;
+    background-color: rgb(224, 233, 233);
+    color: black;
+    border-radius: 20px;
+    margin-top: 3px;
   }
   
   /* CSS for the registration form */
